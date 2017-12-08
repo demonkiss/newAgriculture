@@ -14,6 +14,8 @@
     <link href="style/bootstrap.css" rel="stylesheet" />
     <link href="css/nylq.css" rel="stylesheet" />
     <link href="css/reset.css" rel="stylesheet" />
+
+
     <!--<link href="css/layout.css" rel="stylesheet" />-->
     <style>
         html, body {
@@ -104,8 +106,10 @@
     </script>
     <!--<script src="https://js.arcgis.com/3.20/"></script>-->
     <!--<script src="Javascript/lib/jquery-2.1.4.js"></script>-->
+    
+
     <script src="Javascript/lib/jquery-1.8.3.js"></script>
-    <script src="Javascript/lib/bootstrap.js"></script>
+    <!--<script src="Javascript/lib/bootstrap.js"></script>-->
     <script src="Javascript/config/layerConfig.js"></script>
     <script src="Javascript/ArcGISAPI/3.16/init.js"></script>
     <script>
@@ -254,6 +258,7 @@
                     return false;
                 }
                 bindEvt();
+                bindEvtListener();
                 $("#proSelect a").eq(0).trigger("click");
               //  map.centerAndZoom([120.19, 30.26], 6);
                 $(".infocontent").hide();
@@ -334,26 +339,37 @@
                     $(this).css('background', 'url(images/srBtn.png)');
 
                 });
-
+                //dkType点击
                 $('.slide .jcdBox .jcd').click(function () {
                     $('.slide .jcdBox .jcd img').attr('src', 'images/check.png');
                     $(this).find('img').attr('src', 'images/check_active.png');
-                    $(this).find('span').text();
+                    var type = $(this).find('span').text();
+                    dkType = type;
+                  if (type == "粮食生产功能区") {
+                      $("#yqClass").css("display", "none");
+                      $("#lsClass").css("display", "block");
+                      $("#lsClass li").eq(0).trigger("click");
+
+                  } else if (type == "现代农业园区") {
+                      $("#yqClass").css("display", "block");
+                      $("#lsClass").css("display", "none");
+                      $("#yqClass li").eq(0).trigger("click");
+                  }
                 });
+                
+                //$('.slide .sjBox .tabLi li').click(function () {
 
-                $('.slide .sjBox .tabLi li').click(function () {
+                //    $('.slide .sjBox .tabLi li').removeClass('active');
 
-                    $('.slide .sjBox .tabLi li').removeClass('active');
+                //    $(this).addClass('active');
 
-                    $(this).addClass('active');
+                //    var index = $(this).index();
 
-                    var index = $(this).index();
-
-                    $('.slide .sjBox .tabBox').hide();
+                //    $('.slide .sjBox .tabBox').hide();
 
 
-                    $('.slide .sjBox .tabBox').eq(index).show();
-                });
+                //    $('.slide .sjBox .tabBox').eq(index).show();
+                //});
 
 
 
@@ -362,29 +378,194 @@
                     $('.slide .sjBox .tabBox1 li').removeClass('active');
 
                     $(this).addClass('active');
+                    sssy = $(this).children("span").text();
+                    alert(sssy);
+                    getQx(sssy);
                 });
-
+               //gnType点击
                 $('.slide .qhBox li').click(function () {
                     $('.slide .qhBox li').removeClass('active');
                     $(this).addClass('active');
+                    clusterType.length = 0;
+                  //  clusterImg.length = 0;
+                    layerDType.length = 0;
+                    statisType.length = 0;
+                    currentattr = "";
+
+                    gnType = $(this).text();
+                    alert(gnType);
+                    var $clazz = $(this).attr("class");
+                    $clazz = $clazz.split(" ");
+                    $(".checksBox .jb").css("display", "none");
+                    $clazz.map(function (item) {
+                        if (item != "active") {
+                            $(".checksBox ." + item).css("display", "block");
+                            currentattr = $(".checksBox").find("." + item).attr("value");
+                            var $types = $("." + item + " .jbBox");
+                            //填充数组
+                            
+                            $types.each(function (i, e) {
+                                if ($(e).hasClass("active")) {
+                                    if (dkType == "粮食生产功能区") {
+                                        clusterType.push($(e).children().last().text());
+                                       // alert($(e).children().last().text());
+                                        layerDType.push("'" + $(e).children().last().text() + "'");
+                                      //  clusterImg.push($(e).attr("imgvalue"));
+                                    } else if (dkType == "标准农田") {
+                                        // statisType
+                                        clusterType.push($(e).next().attr("value"));
+                                        layerDType.push($(e).next().attr("value"));
+                                       // clusterImg.push($(e).attr("imgvalue"));
+                                    } else {
+                                        clusterType.push($(e).children().last().text());
+                                        layerDType.push("'" + $(e).children().last().text() + "'");
+                                      //  clusterImg.push($(e).prev().prev().attr("src"));
+                                    }
+                                    statisType.push($(e).children().last().text());
+
+
+                                }
+                            })
+                            loadData(dkType,gnType);
+
+                        }})
+                    
                 })
 
-
+                //checksBox点击
                 $('.slide .jb .jbBox').each(function (index, el) {
                     $(el).toggle(function () {
+                        //勾选上
+                        //alert(1);
                         if ($(el).hasClass('active')) {
                             $(el).removeClass('active');
+                            clusterType.remove($(el).children().last().text());
+                            layerDType.remove("'" + $(el).children().last().text() + "'");
                         } else {
                             $(el).addClass('active');
+                            clusterType.push($(el).children().last().text());
+                            layerDType.push("'" + $(el).children().last().text() + "'");
+                           
                         }
+                        if (currentattr != "") {
+                            // getTotalNumber();
+                            require(["Framework/SwitchLayer"], function (SwitchLayer) {
+                                SwitchLayer.switchLayer();
+                            });
+                        } else {
+                            clusterType.length = 0;
+                            layerDType.length = 0;
+                            clusterImg.length = 0;
+                            statisType.length = 0;
+                        }
+                       
                     }, function () {
+                        //取消勾选 
+                      //  alert(2);
                         if ($(el).hasClass('active')) {
                             $(el).removeClass('active');
+                            clusterType.remove($(el).children().last().text());
+                            layerDType.remove("'" + $(el).children().last().text() + "'");
                         } else {
                             $(el).addClass('active');
+                            clusterType.push($(el).children().last().text());
+                            layerDType.push("'" + $(el).children().last().text() + "'");
+                        }
+                       
+                        if (currentattr != "") {
+                            // getTotalNumber();
+                            require(["Framework/SwitchLayer"], function (SwitchLayer) {
+                                SwitchLayer.switchLayer();
+                            });
+                        } else {
+                            clusterType.length = 0;
+                            layerDType.length = 0;
+                            clusterImg.length = 0;
+                            statisType.length = 0;
                         }
                     })
                 });
+            }
+            function loadData(nyName,secondName) {
+                if (nyName && secondName) {
+                    currenturl = layerConfig[nyName][secondName].url;
+                    visiableArray = layerConfig[nyName][secondName].array;
+                    searchField = layerConfig[nyName][secondName].searchField;
+                    pUrl = layerConfig[nyName][secondName].pUrl;
+                    pArray = layerConfig[nyName][secondName].pArray;
+                }
+                if (currenturl != "") {
+                    fieldInfos = layerConfig[nyName][secondName].fieldInfos;
+                    var url = layerConfig[nyName][secondName].jsondata;
+                    $.ajax({
+                        url: url,
+                        dataType: 'json',
+                        type: "GET",
+                        async: true,
+                        data: {},
+                        success: function (data) {
+                            // pointData = data;
+                            ClusterData = data.features;
+                            // addClusters(data);
+                            require(["Framework/SwitchLayer"], function (SwitchLayer) {
+                                SwitchLayer.switchLayer();
+                            });
+                            // getTotalNumber();
+                        }
+                    });
+                }
+                else {
+                    ClusterData.length = 0;
+                 
+                }
+            }
+            function getQx(cityName) {
+                var html = "<ul class=\"clearfix\">";                               
+                $.ajax({//生成各县级
+                    url: 'Json/area.xml',
+                    dataType: 'xml',
+                    success: function (data) {
+                        $(data).find("root").find("sjzone").each(function (index, ele) {
+                            var id = $(ele).attr("id");
+                            var name = $(ele).attr("name");
+                            if (cityName == name) {
+                                var lat = Number($(ele).attr("lat"));
+                                var lng = Number($(ele).attr("lng"));
+
+                                if (map != undefined) {
+                                    map.centerAndZoom([lat, lng], mapconfig.minZoom + 1);
+                                }
+                                $(ele).find("xjzone").each(function (indexx, elex) {
+                                    var xjid = $(elex).attr("id");
+                                    var xjName = $(elex).attr("name");
+                                    var xjLat = $(elex).attr("lat");
+                                    var xjLng = $(elex).attr("lng");
+                                    var hasXjvalue = $(elex).attr("value");
+                                    var url = $(elex).attr("url");
+                                    var layerindex;
+                                    if ($(elex).attr("layerindex") != "") {
+                                        layerindex = $(elex).attr("layerindex");
+                                    } else {
+                                        layerindex = 0;
+                                    }
+                                    var xjvalue = 0;
+                                    if (hasXjvalue) {
+                                        xjvalue = hasXjvalue;
+                                    }
+                                    
+                                    //  html += "<span onclick='clickArea(" + xjid + ",\"" + xjName + "\"," + xjLat + "," + xjLng + "," + layerindex + ",\"" + url + "\");' class='pt' id='xjtd" + xjid + "'>" + xjName + "(<em id='areaNum" + xjid + "'>" + xjvalue + "</em>)</span>";
+                                    html += "<li class=\"clearfix active\">"
+                                   +"<span xjid=" + xjid + " xjName=" + xjName + " xjLat=" + xjLat + " xjLng=" + xjLng + " class='s1 fl' id='xjtd" + xjid + "'>" + xjName + "</span>"
+                                   +"</li>";
+                                });
+                            }
+                        });
+                        html+="</ul>"
+                        $(".tabBox1").empty();
+                        $(".tabBox1").html(html);
+                    }
+                });
+                
             }
             //绑定事件
             function bindEvt() {
@@ -1300,52 +1481,337 @@
         <div class="jcdBox clearfix">
             <div class="jcd fl">
                 <i class="fl i1">
-                    <img src="images/check.png" />
+                    <img src="images/check_active.png" />
                 </i>
                 <span class="s1 fl">粮食生产功能区</span>
             </div>
             <div class="jcd fl">
                 <i class="fl i1">
-                    <img src="images/check_active.png" />
+                    <img src="images/check.png" />
                 </i>
                 <span class="s1 fl">现代农业园区</span>
             </div>
         </div>
         <div class="qhBox">
             <ul id="lsClass"class="clearfix qhList">
-                <li class="active">功能区级别</li>
-                <li>建设状态</li>
-                <li>建设面积</li>
-                <li>建设年份</li>
+                <li class="active gn">功能区级别</li>
+                <li class="zt">建设状态</li>
+                <li class="mj">建设面积</li>
+                <li class="nf">建设年份</li>
             </ul>
             <ul id="yqClass" class="clearfix qhList" style="display: none">
-                <li class="active" >主导产业示范区</li>
-                <li >特色农业精品区</li>
+                <li class="active zdcy" >主导产业示范区</li>
+                <li class="tsny">特色农业精品区</li>
             </ul>
         </div>
-        <div class="jb clearfix">
-            <div class="jbBox clearfix active">
-                <i class="i1 fl">
+        <div class="checksBox">
+            <div class="jb clearfix gn" value="建设等级">
+                <div class="jbBox clearfix active">
+                    <i class="i1 fl">
 
-                </i>
-                <span class="s1 fl" style="background: #207300;"></span>
-                <span class="s2 fl">省级</span>
+                    </i>
+                    <span class="s1 fl" ><img src="images/gis/省市县/左侧栏示例/省-左侧栏示例.png" /></span>
+                    
+                    <span class="s2 fl">省级</span>
+                </div>
+                <div class="jbBox clearfix active">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/省市县/左侧栏示例/市-左侧栏示例.png" /></span>
+                    <span class="s2 fl">市级</span>
+                </div>
+                <div class="jbBox clearfix active">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/省市县/左侧栏示例/县-左侧栏示例.png" /></span>
+                    <span class="s2 fl">县级</span>
+                </div>
             </div>
-            <div class="jbBox clearfix">
-                <i class="i1 fl">
+            <div class="jb clearfix zt" value="建设状态" style="display: none">
+                <div class="jbBox clearfix active">
+                    <i class="i1 fl">
 
-                </i>
-                <span class="s1 fl" style="background: #66de59;"></span>
-                <span class="s2 fl">市级</span>
+                    </i>
+                    <span class="s1 fl" ><img src="images/gis/建设状态/左侧栏示例/已建-左侧栏示例.png" /></span>
+
+                    <span class="s2 fl">已建</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl" ><img src="images/gis/建设状态/左侧栏示例/在建-左侧栏示例.png" /></span>
+                    <span class="s2 fl">在建</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl" ><img src="images/gis/建设状态/左侧栏示例/拟建-左侧栏示例.png" /></span>
+                    <span class="s2 fl">拟建</span>
+                </div>
             </div>
-            <div class="jbBox clearfix">
-                <i class="i1 fl">
+            <div class="jb clearfix mj" value="认定面积" style="display: none">
+                <div class="jbBox clearfix active">
+                    <i class="i1 fl">
 
-                </i>
-                <span class="s1 fl" style="background: #f5d157;"></span>
-                <span class="s2 fl">县级</span>
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/建设面积/左侧栏示例/大于1000亩-左侧栏示例.png" /></span>
+
+                    <span class="s2 fl">大于1000亩</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/建设面积/左侧栏示例/500-1000亩-左侧栏示例.png" /></span>
+                    <span class="s2 fl">500~1000亩</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/建设面积/左侧栏示例/200-500亩-左侧栏示例.png" /></span>
+                    <span class="s2 fl">200~500亩</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/建设面积/左侧栏示例/小于200亩-左侧栏示例.png" /></span>
+                    <span class="s2 fl">小于200亩</span>
+                </div>
+            </div>
+            <div class="jb clearfix nf" value="建设认定年" style="display: none">
+                <div class="jbBox clearfix active">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/建设年份/左侧栏示例/2017-左侧栏示例.png" /></span>
+
+                    <span class="s2 fl">2017</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/建设年份/左侧栏示例/2016-左侧栏示例.png" /></span>
+                    <span class="s2 fl">2016</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/建设年份/左侧栏示例/2015-左侧栏示例.png" /></span>
+                    <span class="s2 fl">2015</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/建设年份/左侧栏示例/2014-左侧栏示例.png" /></span>
+                    <span class="s2 fl">2014</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/建设年份/左侧栏示例/2013-左侧栏示例.png" /></span>
+                    <span class="s2 fl">2013</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/建设年份/左侧栏示例/2012-左侧栏示例.png" /></span>
+                    <span class="s2 fl">2012</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/建设年份/左侧栏示例/2011-左侧栏示例.png" /></span>
+                    <span class="s2 fl">2011</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/建设年份/左侧栏示例/2010-左侧栏示例.png" /></span>
+                    <span class="s2 fl">2010</span>
+                </div>
+               
+            </div>
+            <div class="jb clearfix zdcy" value="产业类型" style="display: none">
+                <div class="jbBox clearfix active">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/畜牧类.png" /></span>
+
+                    <span class="s2 fl">畜牧类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/蔬菜瓜果类.png" /></span>
+                    <span class="s2 fl">蔬菜瓜果类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/食用菌类.png" /></span>
+                    <span class="s2 fl">食用菌类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/水果类.png" /></span>
+                    <span class="s2 fl">水果类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/茶叶类.png" /></span>
+                    <span class="s2 fl">茶叶类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/蚕桑类.png" /></span>
+                    <span class="s2 fl">蚕桑类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/中药材类.png" /></span>
+                    <span class="s2 fl">中药材类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/花卉苗木类.png" /></span>
+                    <span class="s2 fl">花卉苗木类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/竹木类.png" /></span>
+                    <span class="s2 fl">竹木类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/经济林类.png" /></span>
+                    <span class="s2 fl">经济林类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/渔业类.png" /></span>
+                    <span class="s2 fl">渔业类</span>
+                </div>
+             
+                
+
+            </div>
+            <div class="jb clearfix tsny" value="产业类型" style="display: none">
+                <div class="jbBox clearfix active">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/畜牧类.png" /></span>
+
+                    <span class="s2 fl">畜牧类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/蔬菜瓜果类.png" /></span>
+                    <span class="s2 fl">蔬菜瓜果类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/食用菌类.png" /></span>
+                    <span class="s2 fl">食用菌类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/水果类.png" /></span>
+                    <span class="s2 fl">水果类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/茶叶类.png" /></span>
+                    <span class="s2 fl">茶叶类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/蚕桑类.png" /></span>
+                    <span class="s2 fl">蚕桑类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/中药材类.png" /></span>
+                    <span class="s2 fl">中药材类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/花卉苗木类.png" /></span>
+                    <span class="s2 fl">花卉苗木类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/竹木类.png" /></span>
+                    <span class="s2 fl">竹木类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/经济林类.png" /></span>
+                    <span class="s2 fl">经济林类</span>
+                </div>
+                <div class="jbBox clearfix">
+                    <i class="i1 fl">
+
+                    </i>
+                    <span class="s1 fl"><img src="images/gis/产业类别/渔业类.png" /></span>
+                    <span class="s2 fl">渔业类</span>
+                </div>
+
+
+
             </div>
         </div>
+       
         <div class="searchBox">
             <input type="text" placeholder="输入关键词" />
             <a href="" class="soo">

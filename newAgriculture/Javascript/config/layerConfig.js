@@ -173,8 +173,8 @@
             "url": "http://localhost:6080/arcgis/rest/services/xdny/MapServer",
             "array": [0],
             "searchField": "名称",
-            "pUrl": "http://localhost:6080/arcgis/rest/services/zjny/MapServer",
-            "pArray": [1],
+            "pUrl": "http://118.178.118.139/ArcGIS/rest/services/XDNY_YQpoint/MapServer",
+            "pArray": [0],
             "fieldInfos": [{
                 "fieldName": "名称",
                 "label": "名称",
@@ -202,8 +202,8 @@
             "url": "http://localhost:6080/arcgis/rest/services/xdny/MapServer",
             "array": [1],
             "searchField": "名称",
-            "pUrl": "http://localhost:6080/arcgis/rest/services/zjny/MapServer",
-            "pArray": [2],
+            "pUrl": "http://118.178.118.139/ArcGIS/rest/services/XDNY_YQpoint/MapServer",
+            "pArray": [1],
             "fieldInfos": [{
                 "fieldName": "名称",
                 "label": "名称",
