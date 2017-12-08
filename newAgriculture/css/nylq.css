@@ -1,3 +1,9 @@
+.logoBox{
+    position:absolute;
+    /*background-color:#0094ff;*/
+    z-index:9;
+}
+
 .wrapper{
 	width: 1250px;
 	margin:0 auto;
@@ -302,7 +308,8 @@
 	-webkit-border-radius:7px;
 	text-indent: 14px;
 	font:14px/38px "宋体";
-	color: #e7e7e7;
+	/*color: #e7e7e7;*/
+    color:#000;
 	background: #fff;
 }
 

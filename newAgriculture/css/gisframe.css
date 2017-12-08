@@ -72,8 +72,8 @@
 
 #searchList {
     position: absolute;
-    top: 125px;
-    left: 40px;
+        top: 95px;
+    left: 319px;
     width: 280px;
     height: auto;
     padding: 10px;
@@ -121,8 +121,12 @@
 }
 
 .clearinput {
-    margin: 5px !important;
+    /*margin: 5px !important;*/
     display: none;
+        position: absolute;
+    float: right;
+    top: 18px;
+    right: 45px;
 }
 
 .sel-fun img {

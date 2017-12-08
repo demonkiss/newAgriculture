@@ -2,7 +2,7 @@
     "粮食生产功能区": {
 
         "功能区级别": {
-            "url": "http://localhost:6080/arcgis/rest/services/lsService/MapServer",
+            "url": "http://118.178.118.139/ArcGIS/rest/services/XDNY_LS/MapServer",
             "array": [0],
             "pUrl": "http://118.178.118.139/ArcGIS/rest/services/XDNY_LSpoint/MapServer",
             "pArray":[0],
@@ -52,7 +52,7 @@
             "jsondata": "Json/粮食生产功能区.json",
         },
         "建设状态": {
-            "url": "http://localhost:6080/arcgis/rest/services/lsService/MapServer",
+            "url": "http://118.178.118.139/ArcGIS/rest/services/XDNY_LS/MapServer",
             "searchField": "认定名称",
             "array": [1],
             "pUrl": "http://118.178.118.139/ArcGIS/rest/services/XDNY_LSpoint/MapServer",
@@ -81,8 +81,8 @@
             },
             "jsondata": "Json/粮食生产功能区.json",
         }, "建设面积": {
-            "url": "http://localhost:6080/arcgis/rest/services/ls_2000/MapServer",
-            "array": [0],
+            "url": "http://118.178.118.139/ArcGIS/rest/services/XDNY_LS/MapServer",
+            "array": [2],
             "searchField": "认定名称",
             "pUrl": "http://118.178.118.139/ArcGIS/rest/services/XDNY_LSpoint/MapServer",
             "pArray": [2],
@@ -112,8 +112,8 @@
             "jsondata": "Json/粮食生产功能区.json",
         },
         "建设年份": {
-            "url": "http://localhost:6080/arcgis/rest/services/ls_2000/MapServer",
-            "array": [0],
+            "url": "http://118.178.118.139/ArcGIS/rest/services/XDNY_LS/MapServer",
+            "array": [3],
             "searchField": "认定名称",
             "pUrl": "http://118.178.118.139/ArcGIS/rest/services/XDNY_LSpoint/MapServer",
             "pArray": [3],
@@ -170,7 +170,7 @@
             "jsondata": "Json/粮食生产功能区.json",
         },
         "主导产业示范区": {
-            "url": "http://localhost:6080/arcgis/rest/services/xdny/MapServer",
+            "url": "http://118.178.118.139/ArcGIS/rest/services/XZNY_YQ/MapServer",
             "array": [0],
             "searchField": "名称",
             "pUrl": "http://118.178.118.139/ArcGIS/rest/services/XDNY_YQpoint/MapServer",
@@ -199,7 +199,7 @@
             },
             "jsondata": "Json/主导产业示范区.json",
         }, "特色农业精品区": {
-            "url": "http://localhost:6080/arcgis/rest/services/xdny/MapServer",
+            "url": "http://118.178.118.139/ArcGIS/rest/services/XZNY_YQ/MapServer",
             "array": [1],
             "searchField": "名称",
             "pUrl": "http://118.178.118.139/ArcGIS/rest/services/XDNY_YQpoint/MapServer",

@@ -1406,13 +1406,13 @@ function getCityStaticNumber() {
 function getSearchSql(sValue) {
     var  sSql = "";
     var noinput ;
-    if (sssy == "浙江") {
+    if (sssy == "浙江省") {
         noinput = getSearchsql(layerDType, currentattr);
     } else {
         noinput = getSearchsql(layerDType, currentattr);
     }
     sSql = noinput + " and " + searchField + " like  '%" + sValue + "%'";
-   
+    console.log(sSql);
     return sSql;
 }
 function getSearchsql(layerDType, attrName) {

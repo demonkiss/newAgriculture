@@ -11,7 +11,7 @@
 
     <link href="css/base.css" rel="stylesheet" />
     <link href="css/gisframe.css" rel="stylesheet" />
-    <link href="style/bootstrap.css" rel="stylesheet" />
+    <!--<link href="style/bootstrap.css" rel="stylesheet" />-->
     <link href="css/nylq.css" rel="stylesheet" />
     <link href="css/reset.css" rel="stylesheet" />
 
@@ -181,7 +181,7 @@
           "TDTLayer_Anno",
           "extras/ClusterLayer",
           "extras/ClusterLayer_M",
-
+          "mapconfig/citycode",
           "mapconfig",
           "dojo/on",
           "dojo/dom-class", "dojo/dom-style",
@@ -193,7 +193,7 @@
           Map, esriRequest, Graphic, Extent,
           SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, PictureMarkerSymbol, ClassBreaksRenderer,
           GraphicsLayer, SpatialReference, InfoTemplate, PopupTemplate, Point, webMercatorUtils, ArcGISDynamicMapServiceLayer, TDTLayer, TDTLayer_Anno,
-          ClusterLayer, ClusterLayer_M, mapconfig, on, domClass, domStyle
+          ClusterLayer, ClusterLayer_M, citycode,mapconfig, on, domClass, domStyle
         ) {
             //ready(function () {
             //   parser.parse();
@@ -257,7 +257,7 @@
                     }
                     return false;
                 }
-                bindEvt();
+              //  bindEvt();
                 bindEvtListener();
                 $("#proSelect a").eq(0).trigger("click");
               //  map.centerAndZoom([120.19, 30.26], 6);
@@ -325,6 +325,85 @@
 
             }
             function bindEvtListener() {
+                //切换底图
+                var MapMenu = dojo.query(".MapMenu a");
+                on(MapMenu[0], "click", function (e) {
+                    //  filterReset();
+                    domClass.remove(MapMenu[1], "Mapsatellite1");
+                    domClass.add(MapMenu[1], "Mapsatellite");
+                    domClass.add(MapMenu[0], "Mapmap1");
+                    showLayer("VECTOR");
+                    textColor = "#000";
+
+                });
+                on(MapMenu[1], "click", function (e) {
+                    //  filterReset();
+                    domClass.remove(MapMenu[0], "Mapmap1");
+                    domClass.add(MapMenu[0], "Mapmap");
+                    domClass.add(MapMenu[1], "Mapsatellite1");
+                    showLayer("RASTER");
+                    textColor = "#fff";
+
+                });
+                $(".MapMenu a").on("mouseover", function () {
+                    $(this).children("label").show();
+
+                })
+                $(".MapMenu a").on("mouseout", function () {
+                    $(this).children("label").hide();
+
+                })
+
+                $(".MapMenu input").on("click", function (event) {
+                    console.log($(this).attr("value"));
+
+
+                    //console.log($(e).attr("value"));
+                    if ($(this).attr("value") == "矢量注记") {
+                        if ($(this).attr("data-state") == "uncheck") {
+
+                            //  var layer = new TDTLayer("vec");//影像img 矢量 vec
+                            //   map.addLayer(layer, 0);
+                            var annolayer = new TDTLayer_Anno("cva");//影像cia 矢量cva
+                            map.addLayer(annolayer, 1);
+                            $(this).attr("data-state", "check")
+                        } else {
+                            //var rmap_anno = map.getLayer("map_cva");
+                            //if (rmap_anno) {
+                            //    map.removeLayer(rmap_anno);
+                            //}
+                            if ($("#map_cva")) {
+                                $("#map_cva").remove();
+                            }
+                            $(this).attr("data-state", "uncheck")
+
+                        }
+
+                    } else {
+                        if ($(this).attr("data-state") == "uncheck") {
+
+                            // var layer = new TDTLayer("img");//影像img 矢量 vec
+                            //  map.addLayer(layer, 0);
+                            var annolayer = new TDTLayer_Anno("cia");//影像cia 矢量cva
+                            map.addLayer(annolayer, 1);
+                            $(this).attr("data-state", "check")
+                        } else {
+                            if ($("#map_cia")) {
+                                $("#map_cia").remove();
+                            }
+
+                            //var rmap_anno = map.getLayer("map_cia");
+                            //if (rmap_anno) {
+                            //    map.removeLayer(rmap_anno);
+
+                            //}
+                            $(this).attr("data-state", "uncheck")
+
+                        }
+                    }
+                    //   event.stopPropagation();
+                    // return false;
+                })
                 //控制缩进
                 $('.slide .srBtn').toggle(function () {
 
@@ -373,14 +452,42 @@
 
 
 
-                $('.slide .sjBox .tabBox1 li').click(function () {
+                //$('.slide .sjBox .tabBox1 li').click(function () {
 
-                    $('.slide .sjBox .tabBox1 li').removeClass('active');
+                //    $('.slide .sjBox .tabBox1 li').removeClass('active');
 
-                    $(this).addClass('active');
-                    sssy = $(this).children("span").text();
-                    alert(sssy);
+                //    $(this).addClass('active');
+                //    sssy = $(this).children("span").text();
+                //    ssqy = "";
+                //   // alert(sssy);
+                //    getQx(sssy);
+                //});
+                $(".sel").change(function () {
+                    sssy = $(this).children('option:selected').text();//这就是selected的值
+                    ssqy = "";
                     getQx(sssy);
+                })
+                $(".slide .sjBox .tabBox1").on("click", "li .sj", function () {
+                    sssy = $(this).text();
+                    ssqy = "";
+                    var code = citycode.citycode[sssy];
+                    // alert(sssy);
+                  //  $(".sel").find("option[text='" + sssy + "']").attr("selected", true);
+                    $(".sel").val(code.toString());
+                    getQx(sssy);
+                });
+
+                $(".slide .sjBox .tabBox1").on("click", ".xj", function () {
+                    var xjid = $(this).attr("xjid");
+                    var xjname = $(this).attr("xjname");
+                    var lat = $(this).attr("xjlat");
+                    var lng = $(this).attr("xjlng");
+                    $(".tabBox1 li").removeClass("active");
+                    $(this).parent().addClass("active");
+                    if (map != undefined) {                       
+                        map.centerAndZoom([parseFloat(lat), parseFloat(lng)], mapconfig.maxZoom + 1);                        
+                    }
+                    ssqy = xjname;
                 });
                //gnType点击
                 $('.slide .qhBox li').click(function () {
@@ -393,7 +500,7 @@
                     currentattr = "";
 
                     gnType = $(this).text();
-                    alert(gnType);
+                   // alert(gnType);
                     var $clazz = $(this).attr("class");
                     $clazz = $clazz.split(" ");
                     $(".checksBox .jb").css("display", "none");
@@ -485,6 +592,82 @@
                         }
                     })
                 });
+                //查询
+                
+                $(".searchBox input").keyup(function () {
+                    if ($(".searchBox input").val() == "") {
+                        $(".clearinput").hide();
+                    }
+                    else {
+                        $(".clearinput").show();
+                    }
+
+                })
+                $("#searchList ul").on("click", "li", function () {
+                    $("#searchList ul li").css("background-color", "#fff");
+                    $(this).css("background-color", "#0094ff ");
+
+                    var index = Number($(this).attr("index"));
+
+                    tempLayer.clear();
+                    var lat = Number($(this).attr("x"));
+                    var lng = Number($(this).attr("y"));
+
+
+                    var sfs = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT, new Color([0, 0, 255]), 2), new Color([255, 255, 0, 0.25]));
+                    var polygon = searchLayer.graphics[index].geometry;
+                    var attr = searchLayer.graphics[index].attributes;
+                    var tempGraphic = new Graphic(polygon, sfs, searchLayer.graphics[index], attr);
+                    // tempGraphic.setSymbol(sfs);
+                    tempLayer.add(tempGraphic);
+                    // searchLayer.graphics[index].set
+
+                    var cp = polygon.getExtent().getCenter;
+                    var content;
+                    require(["Framework/SwitchLayer", "Framework/IdentifyTask"], function (SwitchLayer, IdentifyTask) {
+                        content = IdentifyTask.getShowInfo(attr);
+                    });
+
+                    //  map.infoWindow.setTitle("属性信息");
+                    map.infoWindow.setContent(content);
+                    map.infoWindow.show(cp);
+                    //tempLayer.on("graphic-add", function (e) {
+                    //    var content = IdentifyTask.getShowInfo(e.graphic.attributes);
+                    //    map.infoWindow.setTitle("属性信息");
+                    //    map.infoWindow.setContent(content);
+                    //    map.infoWindow.show(cp);
+                    //})
+                    map.centerAndZoom([lat, lng], upLevel + 1);
+                    map.infoWindow.show(cp);
+                })
+                $(".soo").click(function () {
+                    searchLayer.clear();
+                    tempLayer.clear();
+                    console.log($(".searchBox input").val());
+                    if ($(".searchBox input").val() != "") {
+                      //  $("#farmArea").hide();
+
+                       // $("#cityArea").hide();
+                        require(["Framework/SwitchLayer", "Framework/IdentifyTask"], function (SwitchLayer, IdentifyTask) {
+                            searchSql = SwitchLayer.getSearchSql($(".searchBox input").val());
+                            IdentifyTask.queryBySearch();
+                        });
+
+                    } else {
+                        alert("请输入名称");
+                    }
+                    return false;
+
+                });
+                $(".clearinput").click(function () {
+                    $(".searchBox input").val("");
+                    $(this).hide();
+                    $("#searchList ul").html("");
+                    $("#searchList").hide();
+                    searchLayer.clear();
+                    tempLayer.clear();
+                    map.infoWindow.hide();
+                });
             }
             function loadData(nyName,secondName) {
                 if (nyName && secondName) {
@@ -520,56 +703,99 @@
                 }
             }
             function getQx(cityName) {
-                var html = "<ul class=\"clearfix\">";                               
-                $.ajax({//生成各县级
-                    url: 'Json/area.xml',
-                    dataType: 'xml',
-                    success: function (data) {
-                        $(data).find("root").find("sjzone").each(function (index, ele) {
-                            var id = $(ele).attr("id");
-                            var name = $(ele).attr("name");
-                            if (cityName == name) {
-                                var lat = Number($(ele).attr("lat"));
-                                var lng = Number($(ele).attr("lng"));
+                var html = "<ul class=\"clearfix\">";
+                if (cityName == "浙江省") {
+                        $.ajax({//生成各市级
+                            url: 'Json/area.xml',
+                            dataType: 'xml',
+                            success: function (data) {
+                                $(data).find("root").find("sjzone").each(function (index, ele) {
+                                    var id = $(ele).attr("id");
+                                    var value = $(ele).attr("value");
+                                    var name = $(ele).attr("name");
 
-                                if (map != undefined) {
-                                    map.centerAndZoom([lat, lng], mapconfig.minZoom + 1);
-                                }
-                                $(ele).find("xjzone").each(function (indexx, elex) {
-                                    var xjid = $(elex).attr("id");
-                                    var xjName = $(elex).attr("name");
-                                    var xjLat = $(elex).attr("lat");
-                                    var xjLng = $(elex).attr("lng");
-                                    var hasXjvalue = $(elex).attr("value");
-                                    var url = $(elex).attr("url");
-                                    var layerindex;
-                                    if ($(elex).attr("layerindex") != "") {
-                                        layerindex = $(elex).attr("layerindex");
-                                    } else {
-                                        layerindex = 0;
-                                    }
-                                    var xjvalue = 0;
-                                    if (hasXjvalue) {
-                                        xjvalue = hasXjvalue;
-                                    }
-                                    
-                                    //  html += "<span onclick='clickArea(" + xjid + ",\"" + xjName + "\"," + xjLat + "," + xjLng + "," + layerindex + ",\"" + url + "\");' class='pt' id='xjtd" + xjid + "'>" + xjName + "(<em id='areaNum" + xjid + "'>" + xjvalue + "</em>)</span>";
-                                    html += "<li class=\"clearfix active\">"
-                                   +"<span xjid=" + xjid + " xjName=" + xjName + " xjLat=" + xjLat + " xjLng=" + xjLng + " class='s1 fl' id='xjtd" + xjid + "'>" + xjName + "</span>"
-                                   +"</li>";
-                                });
+
+                                   // htm += "<span bh=" + id + " class='pt sj' id='std" + (index + 1) + "'>" + name + "</span>";
+                                    html += "<li class=\"clearfix\">"
+                                   + "<span class='s1 fl sj' >" + name + "</span>"
+                                   + "</li>";
+                                })
+                                html += "</ul>";
+                                $(".tabBox1").html(html);
+                                map.centerAndZoom([120.19, 30.26], downLevel);
                             }
-                        });
-                        html+="</ul>"
-                        $(".tabBox1").empty();
-                        $(".tabBox1").html(html);
-                    }
-                });
+                        })
+                } else {
+                    $.ajax({//生成各县级
+                        url: 'Json/area.xml',
+                        dataType: 'xml',
+                        success: function (data) {
+                            $(data).find("root").find("sjzone").each(function (index, ele) {
+                                var id = $(ele).attr("id");
+                                var name = $(ele).attr("name");
+                                if (cityName == name) {
+                                    var lat = Number($(ele).attr("lat"));
+                                    var lng = Number($(ele).attr("lng"));
+
+                                    if (map != undefined) {
+                                        map.centerAndZoom([lat, lng], mapconfig.minZoom + 1);
+                                    }
+                                    $(ele).find("xjzone").each(function (indexx, elex) {
+                                        var xjid = $(elex).attr("id");
+                                        var xjName = $(elex).attr("name");
+                                        var xjLat = $(elex).attr("lat");
+                                        var xjLng = $(elex).attr("lng");
+                                        var hasXjvalue = $(elex).attr("value");
+                                        var url = $(elex).attr("url");
+                                        var layerindex;
+                                        if ($(elex).attr("layerindex") != "") {
+                                            layerindex = $(elex).attr("layerindex");
+                                        } else {
+                                            layerindex = 0;
+                                        }
+                                        var xjvalue = 0;
+                                        if (hasXjvalue) {
+                                            xjvalue = hasXjvalue;
+                                        }
+
+                                        //  html += "<span onclick='clickArea(" + xjid + ",\"" + xjName + "\"," + xjLat + "," + xjLng + "," + layerindex + ",\"" + url + "\");' class='pt' id='xjtd" + xjid + "'>" + xjName + "(<em id='areaNum" + xjid + "'>" + xjvalue + "</em>)</span>";
+                                        html += "<li class=\"clearfix\">"
+                                       + "<span xjid=" + xjid + " xjName=" + xjName + " xjLat=" + xjLat + " xjLng=" + xjLng + " class='s1 fl xj' id='xjtd" + xjid + "'>" + xjName + "</span>"
+                                       + "</li>";
+                                    });
+                                }
+                            });
+                            html += "</ul>"
+                            //   $(".tabBox1").empty();
+                            $(".tabBox1").html(html);
+                        }
+                    });
+                }
+              
                 
             }
             //绑定事件
             function bindEvt() {
+                //切换底图
+                var MapMenu = dojo.query(".MapMenu a");
+                on(MapMenu[0], "click", function (e) {
+                    //  filterReset();
+                    domClass.remove(MapMenu[1], "Mapsatellite1");
+                    domClass.add(MapMenu[1], "Mapsatellite");
+                    domClass.add(MapMenu[0], "Mapmap1");
+                    showLayer("VECTOR");
+                    textColor = "#000";
 
+                });
+                on(MapMenu[1], "click", function (e) {
+                    //  filterReset();
+                    domClass.remove(MapMenu[0], "Mapmap1");
+                    domClass.add(MapMenu[0], "Mapmap");
+                    domClass.add(MapMenu[1], "Mapsatellite1");
+                    showLayer("RASTER");
+                    textColor = "#fff";
+
+                });
                 $(".MapMenu a").on("mouseover", function () {
                     $(this).children("label").show();
 
@@ -1108,26 +1334,7 @@
                 })
 
 
-                //切换底图
-                var MapMenu = dojo.query(".MapMenu a");
-                on(MapMenu[0], "click", function (e) {
-                    //  filterReset();
-                    domClass.remove(MapMenu[1], "Mapsatellite1");
-                    domClass.add(MapMenu[1], "Mapsatellite");
-                    domClass.add(MapMenu[0], "Mapmap1");
-                    showLayer("VECTOR");
-                      textColor = "#000";
-
-                });
-                on(MapMenu[1], "click", function (e) {
-                    //  filterReset();
-                    domClass.remove(MapMenu[0], "Mapmap1");
-                    domClass.add(MapMenu[0], "Mapmap");
-                    domClass.add(MapMenu[1], "Mapsatellite1");
-                    showLayer("RASTER");
-                    textColor = "#fff";
-
-                });
+              
                 //市点击事件
                 $("#cityArea .control").on("click", ".sj", "", clickSArea);
                 //县级事件
@@ -1417,6 +1624,7 @@
 </head>
 
 <body>
+    <div class="logoBox"><img src="img/logo2.png" /></div>
     <div class="slide">
         <div class="top clearfix">
             <i class="fl i1">
@@ -1424,55 +1632,66 @@
             </i>
             <span class="fl s1">农业两区</span>
             <select class="fr sel">
-                <option>浙江省</option>
+                <option value="">浙江省</option>
+                <option value="330100">杭州市</option>
+                <option value="330200">宁波市</option>
+                <option value="330300">温州市</option>
+                <option value="330400">嘉兴市</option>
+                <option value="330500">湖州市</option>
+                <option value="330600">绍兴市</option>
+                <option value="330700">金华市</option>
+                <option value="330800">衢州市</option>
+                <option value="330900">舟山市</option>
+                <option value="331000">台州市</option>
+                <option value="331100">丽水市</option>
             </select>
         </div>
         <div class="sjBox">
             <div class="tabBox tabBox1">
                 <ul class="clearfix">
-                    <li class="clearfix active">
-                        <span class="s1 fl">杭州市</span>
-                        <p class="s2 fr"><span>0</span>个</p>
+                    <li class="clearfix">
+                        <span class="s1 fl sj">杭州市</span>
+                       <!--<p class="s2 fr"><span>0</span>个</p>--> 
                     </li>
                     <li class="clearfix">
-                        <span class="s1 fl">宁波市</span>
-                        <p class="s2 fr"><span>0</span>个</p>
+                        <span class="s1 fl sj">宁波市</span>
+                         <!--<p class="s2 fr"><span>0</span>个</p>--> 
                     </li>
                     <li class="clearfix">
-                        <span class="s1 fl">温州市</span>
-                        <p class="s2 fr"><span>0</span>个</p>
+                        <span class="s1 fl sj">温州市</span>
+                         <!--<p class="s2 fr"><span>0</span>个</p>--> 
                     </li>
                     <li class="clearfix">
-                        <span class="s1 fl">嘉兴市</span>
-                        <p class="s2 fr"><span>0</span>个</p>
+                        <span class="s1 fl sj">嘉兴市</span>
+                         <!--<p class="s2 fr"><span>0</span>个</p>--> 
                     </li>
                     <li class="clearfix">
-                        <span class="s1 fl">湖州市</span>
-                        <p class="s2 fr"><span>0</span>个</p>
+                        <span class="s1 fl sj">湖州市</span>
+                         <!--<p class="s2 fr"><span>0</span>个</p>--> 
                     </li>
                     <li class="clearfix">
-                        <span class="s1 fl">绍兴市</span>
-                        <p class="s2 fr"><span>0</span>个</p>
+                        <span class="s1 fl sj">绍兴市</span>
+                         <!--<p class="s2 fr"><span>0</span>个</p>--> 
                     </li>
                     <li class="clearfix">
-                        <span class="s1 fl">金华市</span>
-                        <p class="s2 fr"><span>0</span>个</p>
+                        <span class="s1 fl sj">金华市</span>
+                         <!--<p class="s2 fr"><span>0</span>个</p>--> 
                     </li>
                     <li class="clearfix">
-                        <span class="s1 fl">衢州市</span>
-                        <p class="s2 fr"><span>0</span>个</p>
+                        <span class="s1 fl sj">衢州市</span>
+                         <!--<p class="s2 fr"><span>0</span>个</p>--> 
                     </li>
                     <li class="clearfix">
-                        <span class="s1 fl">舟山市</span>
-                        <p class="s2 fr"><span>0</span>个</p>
+                        <span class="s1 fl sj">舟山市</span>
+                         <!--<p class="s2 fr"><span>0</span>个</p>--> 
                     </li>
                     <li class="clearfix">
-                        <span class="s1 fl">台州市</span>
-                        <p class="s2 fr"><span>0</span>个</p>
+                        <span class="s1 fl sj">台州市</span>
+                         <!--<p class="s2 fr"><span>0</span>个</p>--> 
                     </li>
                     <li class="clearfix">
-                        <span class="s1 fl">丽水市</span>
-                        <p class="s2 fr"><span>0</span>个</p>
+                        <span class="s1 fl sj">丽水市</span>
+                         <!--<p class="s2 fr"><span>0</span>个</p>--> 
                     </li>
                 </ul>
             </div>
@@ -1817,12 +2036,13 @@
             <a href="" class="soo">
 
             </a>
+            <a href="javascript:void (0)" class="fr clearinput"><img src="images/searchX.png"></a>
         </div>
         <div class="srBtn"></div>
     </div>
-    <div class="left">
+    <div class="left" style="display:none">
         <div class="top">
-            <div id="search" class="fl">
+            <div id="search" class="fl" style="display:none">
                 <input type="text" placeholder="输入关键词">
 
                 <a id="searchBtn" href="javascript:void (0)" class="fr"><img src="images/search.png"></a>
@@ -1837,17 +2057,17 @@
                     </button>
                     <ul name="" id="proSelect" role="menu" class="dropdown-menu province" aria-labelledby="dropdownMenu1">
                         <li><a href="#" value="浙江">浙江</a></li>
-                        <li><a href="#" value="3301">杭州市</a></li>
-                        <li><a href="#" value="3302">宁波市</a></li>
-                        <li><a href="#" value="3303">温州市</a></li>
-                        <li><a href="#" value="3304">嘉兴市</a></li>
-                        <li><a href="#" value="3305">湖州市</a></li>
-                        <li><a href="#" value="3306">绍兴市</a></li>
-                        <li><a href="#" value="3307">金华市</a></li>
-                        <li><a href="#" value="3308">衢州市</a></li>
-                        <li><a href="#" value="3309">舟山市</a></li>
-                        <li><a href="#" value="3310">台州市</a></li>
-                        <li><a href="#" value="3311">丽水市</a></li>
+                        <li><a href="#" value="330100">杭州市</a></li>
+                        <li><a href="#" value="330200">宁波市</a></li>
+                        <li><a href="#" value="330300">温州市</a></li>
+                        <li><a href="#" value="330400">嘉兴市</a></li>
+                        <li><a href="#" value="330500">湖州市</a></li>
+                        <li><a href="#" value="330600">绍兴市</a></li>
+                        <li><a href="#" value="330700">金华市</a></li>
+                        <li><a href="#" value="330800">衢州市</a></li>
+                        <li><a href="#" value="330900">舟山市</a></li>
+                        <li><a href="#" value="331000">台州市</a></li>
+                        <li><a href="#" value="331100">丽水市</a></li>
                     </ul>
                 </div>
                 <!--<select name="" id="proSelect" class="province">
@@ -1865,9 +2085,9 @@
                     <option value="3311">丽水市</option>
                 </select>-->
                 <!--<img src="images/select.png">-->
-                <div id="totalNumber"><span id="total"></span></div> 
+                <div id="totalNumber"><span id="total"></span></div>
                 <!--<span class="function" id="function">功能</span>-->
-                <div id ="function"></div>
+                <div id="function"></div>
 
             </div>
 
@@ -1904,7 +2124,7 @@
                         <ul>
                             <li>
                                 <!--<img src="images/province.png">-->
-                               
+
                                 <img src="images/gis/省市县/左侧栏示例/省-左侧栏示例.png" />
                                 <input type="checkbox" id="1">
                                 <label class="active" for="1" data-state="check" imgvalue="images/gis/省市县/省.png"></label>
@@ -1912,7 +2132,7 @@
                             </li>
                             <li>
                                 <!--<img src="images/city.png">-->
-                                
+
                                 <img src="images/gis/省市县/左侧栏示例/市-左侧栏示例.png" />
                                 <input type="checkbox" id="2">
                                 <label class="active" for="2" data-state="check" imgvalue="images/gis/省市县/市.png"></label>
@@ -1933,7 +2153,7 @@
                         <ul>
                             <li>
                                 <!--<img src="images/province.png">-->
-                               
+
                                 <img src="images/gis/建设状态/左侧栏示例/已建-左侧栏示例.png" />
                                 <!--<img src="images/gis/建设状态/已建.png" />-->
                                 <input type="checkbox" id="1">
@@ -1964,9 +2184,9 @@
                         <ul>
                             <li>
                                 <!--<img src="images/province.png">-->
-                               
+
                                 <img src="images/gis/建设面积/左侧栏示例/大于1000亩-左侧栏示例.png" />
-                                <input type="checkbox" id="1"> 
+                                <input type="checkbox" id="1">
                                 <label for="1" data-state="uncheck" imgvalue="images/gis/建设面积/大于1000亩.png"></label>
                                 <span>大于1000亩</span>
                             </li>
@@ -2071,18 +2291,18 @@
                 <ul class="xdny" value="" style="display: none">
                     <li>
                         <ul>
-                            <li >
+                            <li>
                                 <!--<img src="images/province.png">-->
                                 <img src="images/gis/现代农业综合区/创建点.png" />
                                 <input type="checkbox" id="xdnyCjd">
-                                <label for="1" data-state="uncheck" imgvalue="" ></label>
+                                <label for="1" data-state="uncheck" imgvalue=""></label>
                                 <span>创建点</span>
                             </li>
-                            <li >
+                            <li>
                                 <!--<img src="images/city.png">-->
                                 <img src="images/gis/现代农业综合区/已认定.png" />
                                 <input type="checkbox" id="xdnyYrz">
-                                <label for="2" data-state="uncheck" imgvalue="" ></label>
+                                <label for="2" data-state="uncheck" imgvalue=""></label>
                                 <span>已认证</span>
                             </li>
                         </ul>
@@ -2283,7 +2503,7 @@
                         <ul>
                             <li>
                                 <!--<img src="images/province.png">-->
-                                
+
                                 <img src="images/gis/标准农田/左侧栏示例/一等田-左侧栏示例.png" />
                                 <input type="checkbox" id="1">
                                 <label for="1" data-state="uncheck" imgvalue="images/gis/标准农田/一等田.png"></label>
@@ -2310,7 +2530,7 @@
                         <ul>
                             <li>
                                 <!--<img src="images/province.png">-->
-                                
+
                                 <img src="images/gis/标准农田/左侧栏示例/建设分布图-左侧栏示例.png" />
                                 <input type="checkbox" id="1">
                                 <label for="1" data-state="uncheck" imgvalue="images/gis/标准农田/建设分布图.png"></label>
@@ -2458,8 +2678,5 @@
         </a>
 
     </div>
-    <script type="text/javascript">
-    
-    </script>
 </body>
 </html>
