@@ -12,6 +12,7 @@ function clearHighLight() {
     map.infoWindow.hide();
     $("#searchList ul").html("");
     $("#searchList").hide();
+   // 
 }
 function switchLayer() {
     var  minzoom = downLevel;
@@ -22,7 +23,7 @@ function switchLayer() {
     //    midzoom = mapconfig.midZoom
     //    maxzoom = mapconfig.maxZoom;
     //});
-
+    $(".labelNumber").remove();
     if (areaClick) {
         areaClick.remove();
     }
@@ -36,9 +37,9 @@ function switchLayer() {
         map.removeLayer(map.getLayer("ls"));
         
     }
-    //if ($("#map_ls")) {
-    //    $("#map_ls").remove();
-    //}
+    if ($("#map_ls")) {
+        $("#map_ls").remove();
+    }
    // searchLayer.clear();
     if (map.getLayer("clusters")) {
         map.removeLayer(map.getLayer("clusters"));
@@ -328,6 +329,11 @@ function getCityBlockStatic() {
                                       + "<p class=\"s2 fr\"><span>" + blockCityNumber + "</span>个</p>"
                                       + "</li>";
                       var attr = { "name": qxName, "number": blockCityNumber };
+                      if (ifIE() == "ie8") {
+                          var screenP = map.toScreen(point);
+                          //if IE8,add text to PicPictureMarkerSymbol
+                          var text = $("<span class='labelNumber'>" + showLabel + "</span>").css({ "position": "absolute", "left": screenP.x - 40, "top": screenP.y - 15, "width": "100px", "height": "30px", "color": "#fff", "z-index": "9" }).appendTo($("body"));
+                      }
                       blockNumber.push(attr);
                       var font = new Font();
                       font.setSize("10pt");
@@ -401,6 +407,30 @@ function getCityBlockStatic() {
         })
     }
     )
+}
+
+function ifIE() {
+    
+    if (navigator.userAgent.indexOf("MSIE") > 0) {
+        if (navigator.userAgent.indexOf("MSIE 6.0") > 0) {
+           //  alert("ie6");
+            return "ie6";
+        }
+        if (navigator.userAgent.indexOf("MSIE 7.0") > 0) {
+          //  alert(7);
+            return "ie7";
+        }
+        if (navigator.userAgent.indexOf("MSIE 8.0") > 0 && !window.innerWidth) {//这里是重点，你懂的
+           // alert("ie8");
+            return "ie8";
+        }
+        if (navigator.userAgent.indexOf("MSIE 9.0") > 0) {
+           // alert(9);
+            return "ie9";
+        }
+        //alert("ie");
+    }
+    
 }
 //获取区界名称
 function getBlockName() {
@@ -1205,7 +1235,13 @@ function addZJCityNumber() {
                       font.setFamily("微软雅黑");
                       // font.setWeight(Font.WEIGHT_BOLD);
                       //  textSymbol.setFont(font);
-
+                      if (ifIE() == "ie8") {
+                          var screenP = map.toScreen(point);
+                          //if IE8,add text to PicPictureMarkerSymbol
+                          var text = $("<span class='labelNumber'>" + showLabel + "</span>").css({ "position": "absolute", "left": screenP.x - 40, "top": screenP.y - 15, "width": "100px", "height": "30px", "color": "#fff", "z-index": "9" }).appendTo($("body"));
+                      }
+                    
+                   
                       total += cityNumber; 
                       var defaultSymbol = new PictureMarkerSymbol("./images/bluetips.png", 120, 40).setOffset(0, 0);
                       cityTextLayer.add(
