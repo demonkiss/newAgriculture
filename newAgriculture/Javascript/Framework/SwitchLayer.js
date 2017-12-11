@@ -170,11 +170,13 @@ function switchLayer() {
            // addDynamicLayer(ld);
             addDynamicLayer(currenturl, visiableArray, ld,0.6);
         }
-
-
-
     }
+    require(["mapconfig/cityCode"], function (citycode) {
+        var code = citycode.citycode[sssy];
 
+        $(".sel").val(code.toString());
+    });
+   
 }
 function getTypeNumber(city, attributeName,district) {
     typeNumber.length = 0;
