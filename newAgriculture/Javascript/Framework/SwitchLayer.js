@@ -122,7 +122,7 @@ function switchLayer() {
               console.log(ld);
 
               // addDynamicLayer(ld);
-              addDynamicLayer(pUrl,pArray, ld);
+              addDynamicLayer(pUrl,pArray, ld,1);
           }
 
         }
@@ -167,7 +167,7 @@ function switchLayer() {
             console.log(ld);
 
            // addDynamicLayer(ld);
-            addDynamicLayer(currenturl, visiableArray, ld);
+            addDynamicLayer(currenturl, visiableArray, ld,0.6);
         }
 
 
@@ -285,7 +285,7 @@ function getCityBlockStatic() {
                       map.removeLayer(map.getLayer("cityLayer"));
                   }
                  
-
+                  var html = "<ul class=\"clearfix\">";
                   var cityTextLayer = new GraphicsLayer({ id: "cityTextLayer" });
                   var  centerPoint = [(map.extent.xmax + map.extent.xmin) / 2.0, (map.extent.ymax + map.extent.ymin) / 2.0];
                   var extent="";
@@ -321,6 +321,12 @@ function getCityBlockStatic() {
                       ssqy = qxName;
                       var blockCityNumber = getCityParam(sssy, "县市区名称");
                       var showLabel = qxName + "   " + blockCityNumber;
+                      var xjLng = data.features[i].properties.cp[0];
+                      var xjLat = data.features[i].properties.cp[1];
+                      html += "<li class=\"clearfix\">"
+                                      + "<span  xjLat=" + xjLat + " xjLng=" + xjLng + " class='s1 fl xj' >" + qxName + "</span>"
+                                      + "<p class=\"s2 fr\"><span>" + blockCityNumber + "</span>个</p>"
+                                      + "</li>";
                       var attr = { "name": qxName, "number": blockCityNumber };
                       blockNumber.push(attr);
                       var font = new Font();
@@ -353,6 +359,8 @@ function getCityBlockStatic() {
                       //  map.disableScrollWheelZoom();
                   }
                   // map.addLayer(cityLayer);
+                  html += "</ul>";
+                  $(".tabBox1").html(html);
                   map.addLayer(cityLayer);
                   map.addLayer(cityTextLayer);
                 //  alert(2)
@@ -692,7 +700,7 @@ function PointInsidePolygon(point, vs) {
     return inside;
 };
 //添加动态图层
-function addDynamicLayer(url,array,layersql) {
+function addDynamicLayer(url, array, layersql,opacity) {
     require(["esri/layers/ImageParameters", "esri/layers/ArcGISDynamicMapServiceLayer"], function (ImageParameters, ArcGISDynamicMapServiceLayer) {
         var imageParameters = new ImageParameters();
         //  imageParameters.layerIds = [0];
@@ -715,7 +723,7 @@ function addDynamicLayer(url,array,layersql) {
         }
         console.log(url, array);
         //   currenturl= "http://localhost:6080/arcgis/rest/services/ls_2000/MapServer";
-        var lslayer = new ArcGISDynamicMapServiceLayer(url, { "imageParameters": imageParameters, "id": "ls", "opacity": 0.6 });
+        var lslayer = new ArcGISDynamicMapServiceLayer(url, { "imageParameters": imageParameters, "id": "ls", "opacity": opacity });
         map.addLayer(lslayer, 2);
         areaClick = map.on("click", function (e) {
             require(["Framework/IdentifyTask"], function (Identify) {
@@ -1068,7 +1076,7 @@ function addZJCityBorder() {
                   borderData = data.features;
                 //  var cityLayer = new GraphicsLayer({ id: "cityLayer" });
                   var cityTextLayer = new GraphicsLayer({ id: "cityTextLayer" });
-                  //var textLayer
+                  var html = "<ul class=\"clearfix\">";   
                   for (var i = 0; i < data.features.length; i++) {
 
                       var polygonJson = {
@@ -1091,7 +1099,11 @@ function addZJCityBorder() {
                       var extent = pu.getExtent();
                       var point = extent.getCenter();
                       //  var showLabel = cityName + "   <tspan style='color:#000'>|</tspan> " + cityNumber;
-                      var showLabel =  cityName + "  " + cityNumber;
+                      var showLabel = cityName + "  " + cityNumber;
+                      html += "<li class=\"clearfix\">"
+                            + "<span class='s1 fl sj' >" + cityName + "</span>"
+                             + "<p class=\"s2 fr\"><span>" + cityNumber + "</span>个</p>"
+                            + "</li>";                    
                       var font = new Font();
                       font.setSize("10pt");
                       font.setFamily("微软雅黑");
@@ -1116,6 +1128,8 @@ function addZJCityBorder() {
                       //  map.disableScrollWheelZoom();
 
                   }
+                  html += "</ul>";
+                  $(".tabBox1").html(html);
                   var cityClick = cityLayer.on("click", function (e) {
                       //get the associated node info when the graphic is clicked
                       currentGraphic = e.graphic;
@@ -1157,7 +1171,7 @@ function addZJCityNumber() {
                   borderData = data.features;
                //   var cityLayer = new GraphicsLayer({ id: "cityLayer" });
                   var cityTextLayer = new GraphicsLayer({ id: "cityTextLayer" });
-                  //var textLayer
+                  var html = "<ul class=\"clearfix\">";
                   for (var i = 0; i < data.features.length; i++) {
                       var polygonJson = {
                           "rings": data.features[i].geometry.coordinates,
@@ -1181,7 +1195,11 @@ function addZJCityNumber() {
                       var extent = pu.getExtent();
                       var point = extent.getCenter();
                    //   var showLabel = cityName + "  <tspan style='color:#000'>|</tspan>  " + cityNumber;
-                      var showLabel =  cityName + "    " + cityNumber;
+                      var showLabel = cityName + "    " + cityNumber;
+                      html += "<li class=\"clearfix\">"
+                          + "<span class='s1 fl sj' >" + cityName + "</span>"
+                           + "<p class=\"s2 fr\"><span>" + cityNumber + "</span>个</p>"
+                          + "</li>";
                       var font = new Font();
                       font.setSize("10pt");
                       font.setFamily("微软雅黑");
@@ -1213,7 +1231,8 @@ function addZJCityNumber() {
                   }
                //   map.addLayer(cityLayer);
                   map.addLayer(cityTextLayer);
-
+                  html += "</ul>";
+                  $(".tabBox1").html(html);
                   console.log(total);
                   if(gnType!=="储备项目"){
                       $("#total").text(total);
