@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-    <title>Cluster</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+    <title>浙江农业</title>
 
     <link href="Javascript/ArcGISAPI/3.16/dijit/themes/tundra/tundra.css" rel="stylesheet" />
     <!--<link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css">-->
@@ -270,7 +271,7 @@
 
             //初始化数据
             function initData() {
-                sssy = "浙江";
+                sssy = "浙江省";
                 firstAttr = "粮食生产功能区";
                 secondAttr = "功能区级别";
                 searchField = layerConfig[firstAttr][secondAttr].searchField;
@@ -1624,7 +1625,18 @@
 </head>
 
 <body>
-    <div class="logoBox"><img src="img/logo2.png" /></div>
+    <div style="position:absolute;z-index:1;width:100%;height:80px;background:url(images/topbg.png) left top repeat-x;">
+        <div class="headerBox">
+            <div class="header clearfix">
+                <div class="logoNew fl"><img src="images/headeLogo.png"></div>
+                <div class="navNew fr">
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!--<div class="logoBox"><img src="img/logo2.png" /></div>-->
     <div class="slide">
         <div class="top clearfix">
             <i class="fl i1">
@@ -1632,7 +1644,7 @@
             </i>
             <span class="fl s1">农业两区</span>
             <select class="fr sel">
-                <option value="">浙江省</option>
+                <option value="330000">浙江省</option>
                 <option value="330100">杭州市</option>
                 <option value="330200">宁波市</option>
                 <option value="330300">温州市</option>

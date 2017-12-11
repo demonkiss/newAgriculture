@@ -59,7 +59,7 @@ function switchLayer() {
     var  zoomlevel = map.getZoom();
     if (zoomlevel <= minzoom) {
         clearHighLight();
-        sssy = "浙江";
+        sssy = "浙江省";
         $(".sel-fun button").text(sssy);
         $(".sel-fun button").append("<span class=\"caret\"></span>");
         ssqy = "";
@@ -172,9 +172,15 @@ function switchLayer() {
         }
     }
     require(["mapconfig/cityCode"], function (citycode) {
-        var code = citycode.citycode[sssy];
+        if (sssy != "浙江省") {
+            var code = citycode.citycode[sssy];
 
-        $(".sel").val(code.toString());
+            $(".sel").val(code.toString());
+        } else
+        {
+            $(".sel").val("330000");
+        }
+       
     });
    
 }
@@ -1328,7 +1334,7 @@ function getTotalNumber() {
     var  tNumber = 0;
     total = 0;
     console.log(gnType);
-    if (sssy == "浙江" && gnType == "储备项目") {
+    if (sssy == "浙江省" && gnType == "储备项目") {
         for (var i = 0; i < ClusterData.length; i++) {
             var  value = ClusterData[i].attributes[currentattr];
             if (clusterType.contains(value)) {

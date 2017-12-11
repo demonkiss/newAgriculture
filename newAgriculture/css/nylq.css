@@ -113,7 +113,7 @@
 }
 .slide .sjBox .tabBox li{
 	float: left;
-	width: 96px;
+	min-width: 96px;
 	height: 24px;
 	background: #f4f4f4;
 	border:1px solid #d4d4d4;
@@ -249,16 +249,19 @@
 	cursor: pointer;
 	margin-right: 7px;
 	margin-bottom: 7px;
+
 }
 
-.slide .qhBox li.active{
-	width: 109px;
-	height: 30px;
-	border:none;
-	line-height: 30px;
-	background: url(../images/li_active.png);
-}
-
+    .slide .qhBox li.active {
+        width: 108px;
+        height: 29px;
+        border: none;
+        line-height: 30px;
+        margin-right: 9px;
+        background: url(../images/li_active.png);
+        box-sizing:content-box;
+         -webkit-box-sizing: content-box; 
+    }
 
 .slide .jb{
 	padding-left: 12px;
