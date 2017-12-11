@@ -258,7 +258,7 @@
                     }
                     return false;
                 }
-              //  bindEvt();
+               // bindEvt();
                 bindEvtListener();
                 $("#proSelect a").eq(0).trigger("click");
               //  map.centerAndZoom([120.19, 30.26], 6);
@@ -623,7 +623,7 @@
                     tempLayer.add(tempGraphic);
                     // searchLayer.graphics[index].set
 
-                    var cp = polygon.getExtent().getCenter;
+                    var cp = polygon.getExtent().getCenter();
                     var content;
                     require(["Framework/SwitchLayer", "Framework/IdentifyTask"], function (SwitchLayer, IdentifyTask) {
                         content = IdentifyTask.getShowInfo(attr);
@@ -640,6 +640,11 @@
                     //})
                     map.centerAndZoom([lat, lng], upLevel + 1);
                     map.infoWindow.show(cp);
+                })
+                $("#searchListHead img").click(function () {
+                    $("#searchList ul").html("");
+                    $("#searchList").hide();
+                    $("#searchListHead").hide();
                 })
                 $(".soo").click(function () {
                     searchLayer.clear();
@@ -665,6 +670,7 @@
                     $(this).hide();
                     $("#searchList ul").html("");
                     $("#searchList").hide();
+                    $("#searchListHead").hide();
                     searchLayer.clear();
                     tempLayer.clear();
                     map.infoWindow.hide();
@@ -1242,7 +1248,7 @@
                     tempLayer.add(tempGraphic);
                     // searchLayer.graphics[index].set
 
-                    var cp = polygon.getExtent().getCenter;
+                    var cp = polygon.getExtent().getCenter();
                     var content;
                     require(["Framework/SwitchLayer", "Framework/IdentifyTask"], function (SwitchLayer, IdentifyTask) {
                         content = IdentifyTask.getShowInfo(attr);
@@ -1279,11 +1285,18 @@
 
 
                 });
+                $("#searchListHead img").click(function () {
+                    $("#searchList ul").html("");
+                    $("#searchList").hide();
+                    $("#searchListHead").hide();
+                })
                 $(".clearinput").click(function () {
                     $("#search input").val("");
                     $(this).hide();
                     $("#searchList ul").html("");
                     $("#searchList").hide();
+                    $("#searchListHead").hide();
+                    
                     searchLayer.clear();
                     tempLayer.clear();
                     map.infoWindow.hide();
@@ -2679,6 +2692,7 @@
              data-dojo-props="region:'center'">
         </div>
         <div id="typeinfo"></div>
+        <div id="searchListHead"><img src="images/close.png" class="fr"></div>
         <div id="searchList"><ul></ul></div>
     </div>
     <div class="MapMenu">

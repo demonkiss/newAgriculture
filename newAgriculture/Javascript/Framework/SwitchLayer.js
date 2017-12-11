@@ -12,6 +12,8 @@ function clearHighLight() {
     map.infoWindow.hide();
     $("#searchList ul").html("");
     $("#searchList").hide();
+    $("#searchListHead").hide();
+    
    // 
 }
 function switchLayer() {

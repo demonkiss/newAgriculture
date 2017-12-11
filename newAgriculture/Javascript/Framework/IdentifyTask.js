@@ -93,6 +93,8 @@
         if (results.featureSet.features.length == 0) {
             alert("无查询结果");
         } else {
+            
+            $("#searchListHead").show();
             $("#searchList").show();
             $("#searchList ul").html("");
             console.log("杭州市上杨畈粮食生产功能区");
