@@ -251,6 +251,9 @@
 	margin-bottom: 7px;
 
 }
+.slide .qhBox li:first-child{
+	height: 26px;
+}
 
     .slide .qhBox li.active {
         width: 108px;
