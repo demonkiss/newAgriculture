@@ -468,28 +468,41 @@
                     ssqy = "";
                     getQx(sssy);
                 })
-                $(".slide .sjBox .tabBox1").on("click", "li .sj", function () {
-                    sssy = $(this).text();
-                    ssqy = "";
-                    var code = citycode.citycode[sssy];
-                    // alert(sssy);
-                  //  $(".sel").find("option[text='" + sssy + "']").attr("selected", true);
-                    $(".sel").val(code.toString());
-                    getQx(sssy);
+                $(".slide .sjBox .tabBox1").on("click", "li", function () {
+                    if ($(this).find("span").first().hasClass("sj")) {
+                        sssy = $(this).find(".sj").text();
+                        ssqy = "";
+                        var code = citycode.citycode[sssy];
+                        // alert(sssy);
+                        //  $(".sel").find("option[text='" + sssy + "']").attr("selected", true);
+                        $(".sel").val(code.toString());
+                        getQx(sssy);
+                    } else if ($(this).find("span").first().hasClass("xj")) {
+                        ssqy = $(this).find(".xj").text();
+                        var lat = $(this).find(".xj").attr("xjlat");
+                        var lng = $(this).find(".xj").attr("xjlng");
+                        $(".tabBox1 li").removeClass("active");
+                        $(this).addClass("active");
+                        if (map != undefined) {
+                            map.centerAndZoom([parseFloat(lng), parseFloat(lat)], mapconfig.maxZoom + 1);
+                        }
+                    }
+                  
                 });
 
-                $(".slide .sjBox .tabBox1").on("click", ".xj", function () {
-                    var xjid = $(this).attr("xjid");
-                    var xjname = $(this).attr("xjname");
-                    var lat = $(this).attr("xjlat");
-                    var lng = $(this).attr("xjlng");
-                    $(".tabBox1 li").removeClass("active");
-                    $(this).parent().addClass("active");
-                    if (map != undefined) {                       
-                        map.centerAndZoom([parseFloat(lat), parseFloat(lng)], mapconfig.maxZoom + 1);                        
-                    }
-                    ssqy = xjname;
-                });
+                //$(".slide .sjBox .tabBox1").on("click", ".xxj", function () {
+                //   // var xjid = $(this).attr("xjid");
+                //   // var xjname = $(this).attr("xjname");
+                //    ssqy = $(this).text();
+                //    var lat = $(this).attr("xjlat");
+                //    var lng = $(this).attr("xjlng");
+                //    $(".tabBox1 li").removeClass("active");
+                //    $(this).parent().addClass("active");
+                //    if (map != undefined) {                       
+                //        map.centerAndZoom([parseFloat(lng), parseFloat(lat)], mapconfig.maxZoom + 1);                        
+                //    }
+                    
+                //});
                //gnType点击
                 $('.slide .qhBox li').click(function () {
                     $('.slide .qhBox li').removeClass('active');
@@ -616,8 +629,8 @@
                     var index = Number($(this).attr("index"));
 
                     tempLayer.clear();
-                    var lat = Number($(this).attr("x"));
-                    var lng = Number($(this).attr("y"));
+                    var lng = Number($(this).attr("x"));
+                    var lat= Number($(this).attr("y"));
 
 
                     var sfs = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT, new Color([0, 0, 255]), 2), new Color([255, 255, 0, 0.25]));
@@ -643,7 +656,7 @@
                     //    map.infoWindow.setContent(content);
                     //    map.infoWindow.show(cp);
                     //})
-                    map.centerAndZoom([lat, lng], upLevel + 1);
+                    map.centerAndZoom([lng, lat], upLevel + 1);
                     map.infoWindow.show(cp);
                 })
                 $("#searchListHead img").click(function () {
