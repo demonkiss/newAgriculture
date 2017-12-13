@@ -527,7 +527,8 @@
                                     } else {
                                         clusterType.push($(e).children().last().text());
                                         layerDType.push("'" + $(e).children().last().text() + "'");
-                                      //  clusterImg.push($(e).prev().prev().attr("src"));
+                                        //  clusterImg.push($(e).prev().prev().attr("src"));
+                                        //console.log(clusterType);
                                     }
                                     statisType.push($(e).children().last().text());
 
@@ -548,10 +549,12 @@
                         if ($(el).hasClass('active')) {
                             $(el).removeClass('active');
                             clusterType.remove($(el).children().last().text());
+                            statisType.remove($(el).children().last().text());
                             layerDType.remove("'" + $(el).children().last().text() + "'");
                         } else {
                             $(el).addClass('active');
                             clusterType.push($(el).children().last().text());
+                            statisType.push($(el).children().last().text());
                             layerDType.push("'" + $(el).children().last().text() + "'");
                            
                         }
@@ -573,10 +576,12 @@
                         if ($(el).hasClass('active')) {
                             $(el).removeClass('active');
                             clusterType.remove($(el).children().last().text());
+                            statisType.remove($(el).children().last().text());
                             layerDType.remove("'" + $(el).children().last().text() + "'");
                         } else {
                             $(el).addClass('active');
                             clusterType.push($(el).children().last().text());
+                            statisType.push($(el).children().last().text());
                             layerDType.push("'" + $(el).children().last().text() + "'");
                         }
                        
@@ -1090,7 +1095,7 @@
                             case "现代农业综合区":
                                 clusterType.length = 0;
                                 layerDType.length = 0;
-                                statisType.length = 0;
+                              //  statisType.length = 0;
                               //  $(".xdny input").attr("disabled", true)
                                 break;
                             default:
