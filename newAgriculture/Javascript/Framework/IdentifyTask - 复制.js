@@ -1,40 +1,40 @@
 ﻿define(function (IdentifyResult) {
-
+    /*查询要素*/
     var screenP;
     var hasFeature = false;
 
     var parainfo;
     var graphicTmp;
-    var infoMoveEvent;
+    var infoMoveEvent;//info框随地图变化移动事件
 
     function DoIdentify(mapPoint, url, layerArray) {
         require(["esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters"], function (IdentifyTask, IdentifyParameters) {
             map.graphics.clear();
 
             var identifyTask = new IdentifyTask(url);
-
+            //IdentifyTask参数设置
             var identifyParameters = new IdentifyParameters();
-
+            //冗余范围
             identifyParameters.tolerance = 6;
-
+            //返回地理元素
             identifyParameters.returnGeometry = true;
-  
+            //进行Identify的图层为全部
             identifyParameters.layerOption = IdentifyParameters.LAYER_OPTION_ALL;
-
+            //待查询的图层ID
             identifyParameters.layerIds = layerArray;
-
+            //属性点
             identifyParameters.geometry = mapPoint;
-
+            //curMapPoint = mapPoint;
             screenP = map.toScreen(mapPoint);
-
+            //当前地图范围
             identifyParameters.mapExtent = map.extent;
             identifyParameters.width = map.width;
             identifyParameters.height = map.height;
-
+            //执行数据查询
             identifyTask.execute(identifyParameters, IdentifyResultManager, ResultFailed);
         })
     }
-
+    /*要素查询回调函数*/
     function ResultFailed(result) {
         alert("查询失败");
     }
@@ -46,23 +46,23 @@
             }
             var keys = IdentifyResult[0].feature.attributes;
             tempLayer.on("graphic-add", function (e) {
-          
+                // console.log(e.graphic.attributes);
 
 
                 var content = getShowInfo(e.graphic.attributes);
-       
+                //  map.infoWindow.setTitle("属性信息");
                 map.infoWindow.setContent(content);
-  
+                // map.infoWindow.show(mp);
             });
             setSymbol(IdentifyResult[0].feature.geometry, keys);
-   
+            //  showDetails(keys, screenP);
         }
     }
 
-
+    //搜索框查询
     function queryBySearch() {
         require(["esri/tasks/query", "esri/tasks/QueryTask"], function (Query, QueryTask) {
-   
+            //  debugger;
             map.graphics.clear();
 
             var furl = currenturl + "/" + visiableArray.toString();
@@ -70,7 +70,15 @@
             var query = new Query();
             query.returnGeometry = true;
             query.outFields = ["*"];
-            var reg = /^[1-9]\d*$|^0$/; 
+            var reg = /^[1-9]\d*$|^0$/;   // 注意：故意限制了 0321 这种格式，如不需要，直接reg=/^\d+$/;数字
+            //if (reg.test(value) == true) {
+            //    query.where = "DKBM LIKE'%" + value + "%'";
+            //    inputType = 1;
+            //} else {
+            //    query.where = "DKMC LIKE'%" + value + "%'";
+            //    inputType = 0;
+
+            //}
             query.where = searchSql;
             queryTask.on("complete", queryByInputComplete)
             queryTask.execute(query);
@@ -78,7 +86,7 @@
 
     }
     function queryByInputComplete(results) {
-   
+        //  $("#listbox").empty();
         var showInfo;
         var objid;
         var length = results.featureSet.features.length;
@@ -97,7 +105,7 @@
             searchLayer.on("click", function (e) {
                 console.log(e.graphic.attributes);
                 var content = getShowInfo(e.graphic.attributes);
-
+                // map.infoWindow.setTitle("属性信息");
                 map.infoWindow.setContent(content);
                 map.infoWindow.show(cp);
             })
@@ -119,10 +127,10 @@
     function setSearchSymbol(geo, attr) {
         var graphic;
         require(["esri/layers/GraphicsLayer", "esri/dijit/PopupTemplate", "esri/symbols/PictureMarkerSymbol", "esri/Color", "esri/graphic", "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleFillSymbol"], function (GraphicsLayer, PopupTemplate, PictureMarkerSymbol, Color, Graphic, SimpleLineSymbol, SimpleFillSymbol) {
-    
+            // console.log(fieldInfos);
 
             var popupTemplate = new PopupTemplate({
-      
+                //"title": "属性信息",
                 "content": "聚集点信息",
                 "fieldInfos": fieldInfos,
             });
@@ -143,7 +151,7 @@
                     mp = geo.getExtent().getCenter();
 
                     searchLayer.add(graphic);
-            
+                    //  console.log(graphic);
 
                     break;
                 default:
@@ -165,10 +173,10 @@
             locationY = $(window).height() / 2;
         }
         else {
-
+            // debugger;
             var offsetX = mapPoint.x + 250 - $(window).width();
             if (offsetX > 0) {
- 
+                // debugger;
                 var p = map.toMap(mapPoint);
                 map.centerAt(p);
                 locationX = $(window).width() / 2;
@@ -201,12 +209,16 @@
                 }
                 else {
                     if (fk[key]) {
-      
+                        //  content += "<tr>"
+                        //  content += "<td>" + fk[key] + "</td>" + "<td>" + keys[key] + "</td>"
+                        //   "<tr>"
                         var obj = { "name": fk[key], "value": keys[key] }
                         rows.push(obj);
                         count++;
                     } else {
-          
+                        //content += "<tr>"
+                        //content += "<td>" + key + "</td>" + "<td>" + keys[key] + "</td>"
+                        //"<tr>"
                         var obj = { "name": key, "value": keys[key] }
                         rows.push(obj);
                         count++;
@@ -215,7 +227,7 @@
                 }
             }
             content += "</table>";
-          
+            // content += " <a id=\"getRoomInfo\" onclick=\"getRoomInfo(this)\" value=\"" + fid + "\"  href=\"#\" class=\"easyui-linkbutton c4\" style=\"width:120px\">详细信息</a>"
             content += "<button  id=\"getRoomInfo\" type=\"button\" onclick=\"getRoomInfo(this)\" value=\"" + fid + "\" class=\"btn btn btn-info center-block\">查看楼层</button>"
         });
 
@@ -233,11 +245,12 @@
         $('.houseinfo').propertygrid({
             height: 300,
             width: 260,
-
+            //  fit: true,
             autoscroll: false,
             nowrap: false,
             autoRowHeight: true,
-
+            // fitColumns: true,
+            // scrollbarSize: 0,
             columns: [[
            { field: 'name', title: '属性名', width: 100, sortable: false },
            { field: 'value', title: '值', width: 160, resizable: true }
@@ -264,18 +277,18 @@
 
         for (var i = 0; i < layerSet.length; i++) {
             if (layerSet[i].queryurl != "") {
-      
+                //layer.push(layerSet[i].text);
                 url.push(layerSet[i].queryurl);
                 layerIds.push(layerSet[i].queryarray);
                 layerName.push(layerSet[i].querytite);
-            
+                //  displayName.push(layerSet[i].displayname)
             }
         }
-
+        // queryPara.layer = layer;
         queryPara.url = url;
         queryPara.layerIds = layerIds;
         queryPara.layerName = layerName;
- 
+        // queryPara.displayName = displayName;
         return queryPara;
     }
     function DoQueryTask(geometry) {
@@ -315,10 +328,10 @@
                 if (fields[i].type == "esriFieldTypeDate") {
                     var str = attr[fields[i].name];
                     var myDate = new Date(str);
-                    value = myDate.getFullYear() + "/"; 
-                    value += (myDate.getMonth() + 1) + "/"; 
-                    value += myDate.getDate();
-             
+                    value = myDate.getFullYear() + "/"; //获取完整的年份(4位,1970-????)
+                    value += (myDate.getMonth() + 1) + "/"; //获取当前月份(0-11,0代表1月)
+                    value += myDate.getDate(); //获取当前日(1-31)
+                    // value = date.toString();
                     attr[fields[i].name] = value;
                 }
             }
@@ -327,10 +340,18 @@
             if (fname.trim().length == 0) {
                 fname = "无楼栋名称";
             }
-
+            //   $('#datalist').datalist('appendRow', { text: fname, value: objid });
+            //  result += ("<li class='menuli' alt='" + objid + "'>" + fname + "</li>");
             result += ("<li classs='list-group-item' alt='" + objid + "'>" + fname + "</li>");
         }
+        //result += "</ul></div>";
+        //result += "</div>";
+        //        }
 
+
+        //    }
+        //}
+        //}
         console.log(result);
         if (result != "") {
             $("#queryData ul").html(result);
@@ -344,13 +365,13 @@
         infoList.css("display", "block");
     }
     function setSymbol(geo, attr) {
-      
+        // map.graphics.clear();
         tempLayer.clear();
         var graphic;
         require(["esri/dijit/PopupTemplate", "esri/symbols/PictureMarkerSymbol", "esri/Color", "esri/graphic", "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleFillSymbol"], function (PopupTemplate, PictureMarkerSymbol, Color, Graphic, SimpleLineSymbol, SimpleFillSymbol) {
-
+            console.log(fieldInfos);
             var popupTemplate = new PopupTemplate({
-             
+                // "title": "属性信息",
                 "content": "聚集点信息",
                 "fieldInfos": fieldInfos,
             });
@@ -359,9 +380,9 @@
                     var symbol = new PictureMarkerSymbol("img/marker-blue.png", 28, 52).setOffset(0, 21);
                     var graphicP = new Graphic(geo, symbol, attr, popupTemplate);
                     tempLayer.add(graphicP);
-            
+                    // popupTemplate.setMap(map);
                     map.infoWindow.show(graphicP.geometry);
-                 
+                    // map.graphics.add(graphicP);
                     break;
                 case "polyline":
                     var sls = new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASH, new Color([255, 0, 0]), 3);
@@ -374,9 +395,9 @@
                     mp = geo.getExtent().getCenter();
 
                     tempLayer.add(graphic);
-              
+                    // popupTemplate.setMap(map);
                     map.infoWindow.show(mp);
-              
+                    //  console.log(graphic);
 
                     break;
                 default:
@@ -445,7 +466,7 @@
 
         var geo = currentGraphic.geometry;
         var keys = currentGraphic.attributes;
-
+        // debugger;
         var content = getInfoContent(keys, layerIndex);
         setHighSymbol(geo, content);
         var mp;
@@ -459,6 +480,9 @@
 
         map.infoWindow.show(mp);
 
+        //  infoWindow.setTitle("详细信息");
+        // infoWindow.setContent(infoContent);
+        // map.infoWindow.show(mp);
     }
     function getInfoContent(keys, layerIndex) {
 
@@ -482,12 +506,17 @@
                     var value = keys[key];
 
                     if (fk[key]) {
-     
+                        //  content += "<tr>"
+                        //  content += "<td>" + fk[key] + "</td>" + "<td>" + keys[key] + "</td>"
+                        //   "<tr>"
+
                         var obj = { "name": fk[key], "value": value };
                         rows.push(obj);
                         count++;
                     } else {
-
+                        //content += "<tr>"
+                        //content += "<td>" + key + "</td>" + "<td>" + keys[key] + "</td>"
+                        //"<tr>"
                         var obj = { "name": key, "value": value };
                         rows.push(obj);
                         count++;
@@ -496,7 +525,7 @@
                 }
             }
             content += "</table>";
-        
+            // content += " <a id=\"getRoomInfo\" onclick=\"getRoomInfo(this)\" value=\"" + fid + "\"  href=\"#\" class=\"easyui-linkbutton c4\" style=\"width:120px\">详细信息</a>"
             content += "<button  id=\"getRoomInfo\" type=\"button\" onclick=\"getRoomInfo(this)\" value=\"" + fid + "\" class=\"btn btn btn-info center-block\">查看楼层</button>"
         });
         infoWindow.setTitle("详细信息");
@@ -512,11 +541,12 @@
         $('.houseinfo').propertygrid({
             height: 300,
             width: 260,
-
+            //  fit: true,
             autoscroll: false,
             nowrap: false,
             autoRowHeight: true,
-
+            // fitColumns: true,
+            // scrollbarSize: 0,
             columns: [[
            { field: 'name', title: '属性名', width: 100, sortable: false },
            { field: 'value', title: '值', width: 160, resizable: true }

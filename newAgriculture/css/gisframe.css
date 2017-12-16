@@ -331,6 +331,31 @@ position: absolute;
         height: 64px;
         width: 64px;
     }
+    #zoomDiv{
+        position:absolute;
+        top:45%;
+        right:10px;
+        width:65px;
+        height:125px;
+        background:#fff;
+        opacity:0.85;
+    }
+    .zoomin{
+        position:relative;
+        float:left;
+        height:60px;
+        width:64px;
+        background-image:url(../images/zoom.png);
+       background-position: 0px 0px;
+    }
+      .zoomout{
+        position:relative;
+        float:left;
+        height:60px;
+        width:64px;
+        background-image:url(../images/zoom.png);
+        background-position: 72px 0px;
+    }
 /*place*/
 input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
     color: #ddd;
