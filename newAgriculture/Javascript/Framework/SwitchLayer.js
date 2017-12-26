@@ -103,8 +103,8 @@ function switchLayer() {
 
             $("#total").text(number);
         }
-          addBorder();
-
+         // addBorder();
+        addBlockBorder();
           var ld = "";
           if (layerDType.length) {
 
