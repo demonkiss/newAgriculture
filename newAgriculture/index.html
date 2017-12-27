@@ -159,7 +159,7 @@
                 logo: false,
                 slider: false,
                 center: [120.19, 30.26],
-                  zoom: 6
+                  zoom: 5
             });
             var layer = new TDTLayer("img");
             map.addLayer(layer, 0);
@@ -194,7 +194,8 @@
                 bindEvtListener();
                 $("#proSelect a").eq(0).trigger("click");
                 $(".infocontent").hide();
-                setTimeout(initData, 300);
+                initData();
+               // setTimeout(initData, 300);
             })
             function initData() {
                 sssy = "浙江省";
